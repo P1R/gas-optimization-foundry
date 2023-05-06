@@ -1,0 +1,24 @@
+        assembly {
+            let _ptr := mload(0x40)
+
+            /* Update sender balance */
+            // balances[_sender] -= _amount;
+            //
+            // abi.encode(msg.sender, 3) - where 3
+            // is the slot number for balances
+            mstore(_ptr, senderOfTx)
+            mstore(add(_ptr, 0x20), 3)
+
+            // keccak256(abi.encode(msg.sender,3))
+            let _loc := keccak256(_ptr, 0x40)
+
+            // Update balance
+            sstore(_loc, sub(sload(_loc), _amount))
+
+            /* Update receiver balance */
+            // balances[_recipient] += _amount;
+            mstore(_ptr, _recipient)
+            mstore(add(_ptr, 0x20), 3)
+            _loc := keccak256(_ptr, 0x40)
+            sstore(_loc, add(sload(_loc), _amount))
+        }
