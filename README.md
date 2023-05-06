@@ -21,3 +21,6 @@ EG: `forge test --match-test test_onlyOwner -vvvv`
 
 ## Original Gas Report
 ![Original Gas Report](./img/original-gas-report.png)
+
+## Optimized Gas Report
+![Optmized Gas Report](./img/optmized-gas-report.png)
