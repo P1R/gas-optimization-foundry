@@ -1,4 +1,5 @@
 # GAS OPTIMSATION 
+A gas optimization challenge from the Encode Expert Solidity Bootcamp
 
 - Your task is to edit and optimise the Gas.sol contract. 
 - You cannot edit the tests & 
