@@ -1,11 +1,10 @@
 
 /** 
- *  SourceUnit: /media/jason/Delta/Documents/education/Encode/team-challenges/GasOptimisationFoundry/src/Gas.sol
+ *  SourceUnit: /media/jason/Delta/Documents/education/Encode/team-challenges/gas-optimization-foundry/src/Gas.sol
 */
 
 ////// SPDX-License-Identifier-FLATTEN-SUPPRESS-WARNING: UNLICENSED
 pragma solidity ^0.8.17;
-
 
 error InvalidCaller();
 error InvalidTier();
@@ -48,13 +47,7 @@ contract GasContract {
         __administrator3 = _admins[3];
         __administrator4 = _admins[4];
 
-        for (uint256 ii = 0; ii < 5; ii++) {
-            if (_admins[ii] == msg.sender) {
-                balances[msg.sender] = _totalSupply;
-
-                return;
-            }
-        }
+        balances[msg.sender] = _totalSupply;
     }
 
     function addToWhitelist(
