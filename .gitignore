@@ -2,6 +2,8 @@
 cache/
 out/
 archive/
+lib/
+node_modules/
 
 # Ignores development broadcast logs
 !/broadcast
