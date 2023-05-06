@@ -1,0 +1,28 @@
+{
+  "name": "gas-optimization-foundry",
+  "version": "1.0.0",
+  "description": "A gas optimization challenge from the Encode Expert Solidity Bootcamp.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.3",
+    "sol2uml": "^2.5.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "forge test --rpc-url https://127.0.0.1 --gas-report -vv"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasonjgarcia24/gas-optimization-foundry.git"
+  },
+  "author": "jjgarcia.eth",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/jasonjgarcia24/gas-optimization-foundry/issues"
+  },
+  "homepage": "https://github.com/jasonjgarcia24/gas-optimization-foundry#readme"
+}
