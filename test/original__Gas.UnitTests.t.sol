@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "forge-std/Test.sol";
 import "../src/original__Gas.sol";
 
-contract GasTest is Test {
+contract original__GasTest is Test {
     original__GasContract public gas;
     uint256 public totalSupply = 1000000000;
     address owner = address(0x1234);
