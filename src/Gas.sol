@@ -16,7 +16,6 @@ contract Constants {
 
 contract GasContract is Constants {
     uint256 public totalSupply = 0; // cannot be updated
-
     uint256 private __mutex = 1;
 
     event AddedToWhitelist(address userAddress, uint256 tier);
