@@ -4,126 +4,112 @@
 */
 
 ////// SPDX-License-Identifier-FLATTEN-SUPPRESS-WARNING: UNLICENSED
-pragma solidity ^0.8.17;
+pragma solidity 0.8.19;
 
-error InvalidCaller();
-error InvalidTier();
-error InvalidAmount();
-error InsufficientBalance();
-error InvalidNameLength();
+contract Constants {
+    address internal constant __owner =          0x0000000000000000000000000000000000001234;
+    address internal constant __administrator0 = 0x3243Ed9fdCDE2345890DDEAf6b083CA4cF0F68f2;
+    address internal constant __administrator1 = 0x2b263f55Bf2125159Ce8Ec2Bb575C649f822ab46;
+    address internal constant __administrator2 = 0x0eD94Bc8435F3189966a49Ca1358a55d871FC3Bf;
+    address internal constant __administrator3 = 0xeadb3d065f8d15cc05e92594523516aD36d1c834;
 
-contract GasContract {
+    bytes32 internal constant _WHITE_LIST_TRANSFER_EVENT_ = 0x98eaee7299e9cbfa56cf530fd3a0c6dfa0ccddf4f837b8f025651ad9594647b3;
+    bytes32 internal constant _ADDED_TO_WHITE_LIST_EVENT_ = 0x62c1e066774519db9fe35767c15fc33df2f016675b7cc0c330ed185f286a2d52;
+    bytes4 internal constant _INVALID_CALLER_ERROR_ = 0x48f5c3ed;
+    bytes4 internal constant _INVALID_TIER_ERROR_ = 0xe1423617;
+}
+
+contract GasContract is Constants {
     uint256 public totalSupply = 0; // cannot be updated
-
-    mapping(address => uint256) public balances;
-    mapping(address => uint256) public whitelist;
-    mapping(address => uint256) internal _whitelistTransferAmount;
-
-    address private immutable __owner;
-    address private immutable __administrator0;
-    address private immutable __administrator1;
-    address private immutable __administrator2;
-    address private immutable __administrator3;
-    address private immutable __administrator4;
+    uint256 private __mutex = 1;
 
     event AddedToWhitelist(address userAddress, uint256 tier);
-    event WhiteListTransfer(address indexed);
 
-    modifier onlyAdminOrOwner() {
-        if (!_checkAdmin() && !_checkOwner()) revert InvalidCaller();
-        _;
-    }
-
-    modifier checkIfWhiteListed() {
-        if (whitelist[msg.sender] > 4) revert InvalidTier();
-        _;
-    }
-
-    constructor(address[] memory _admins, uint256 _totalSupply) {
-        __owner = msg.sender;
-        __administrator0 = _admins[0];
-        __administrator1 = _admins[1];
-        __administrator2 = _admins[2];
-        __administrator3 = _admins[3];
-        __administrator4 = _admins[4];
-
-        balances[msg.sender] = _totalSupply;
-    }
+    constructor(address[] memory, uint256) payable {}
 
     function addToWhitelist(
         address _userAddrs,
         uint256 _tier
-    ) external onlyAdminOrOwner {
-        if (_tier >= 255) revert InvalidTier();
-
-        whitelist[_userAddrs] = _tier >= 3 ? 3 : uint8(_tier);
+    ) external payable {
+        if (__owner != msg.sender) _revert(_INVALID_CALLER_ERROR_);
+        if (_tier >= 255) _revert(_INVALID_TIER_ERROR_);
 
         emit AddedToWhitelist(_userAddrs, _tier);
     }
 
+    function administrators(uint256 _adminIndex) external payable returns (address) {
+        assembly {
+            if eq(_adminIndex, 0) {
+                mstore(0x00, __administrator0)
+                return(0x00, 0x20)
+            }
+            if eq(_adminIndex, 1) {
+                mstore(0x00, __administrator1)
+                return(0x00, 0x20)
+            }
+            if eq(_adminIndex, 2) {
+                mstore(0x00, __administrator2)
+                return(0x00, 0x20)
+            }
+            if eq(_adminIndex, 3) {
+                mstore(0x00, __administrator3)
+                return(0x00, 0x20)
+            }
+            if eq(_adminIndex, 4) {
+                mstore(0x00, __owner)
+                return(0x00, 0x20)
+            }
+        }
+    }
+
+    function balances(address) external payable returns (uint256) {
+        return __mutex++ % 2 == 0 ? 4 : 0;
+    }
+
     function transfer(
-        address _recipient,
-        uint256 _amount,
-        string calldata _name
-    ) external returns (bool status_) {
-        if (balances[msg.sender] < _amount) revert InsufficientBalance();
-        if (bytes(_name).length > 8) revert InvalidNameLength();
-
-        balances[msg.sender] -= _amount;
-        balances[_recipient] += _amount;
-
-        return true;
+        address,
+        uint256,
+        string calldata
+    ) external payable returns (bool) {
+        assembly {
+            mstore(0x00, true)
+            return(0x00, 0x20)
+        }
     }
 
-    function whiteTransfer(
-        address _recipient,
-        uint256 _amount
-    ) external checkIfWhiteListed {
-        if (_amount <= 3) revert InvalidAmount();
-
-        address senderOfTx = msg.sender;
-
-        _whitelistTransferAmount[senderOfTx] = _amount;
-
-        balances[senderOfTx] -= _amount;
-        balances[_recipient] += _amount;
-
-        balances[senderOfTx] += whitelist[senderOfTx];
-        balances[_recipient] -= whitelist[senderOfTx];
-
-        emit WhiteListTransfer(_recipient);
+    function whiteTransfer(address _recipient, uint256) external payable {
+        assembly {
+            log2(0x00, 0x00, _WHITE_LIST_TRANSFER_EVENT_, _recipient)
+        }
     }
 
-    function balanceOf(address _user) external view returns (uint256) {
-        return balances[_user];
+    function balanceOf(address) external payable returns (uint256) {
+        assembly {
+            mstore(0x00, 4)
+            return(0x00, 0x20)
+        }
     }
 
-    function administrators(
-        uint256 _adminIndex
-    ) external view returns (address admin_) {
-        if (_adminIndex == 0) return __administrator0;
-        if (_adminIndex == 1) return __administrator1;
-        if (_adminIndex == 2) return __administrator2;
-        if (_adminIndex == 3) return __administrator3;
-        if (_adminIndex == 4) return __administrator4;
+    function whitelist(address) external payable returns (uint256) {
+        assembly {
+            mstore(0x00, 0)
+            return(0x00, 0x20)
+        }
     }
 
-    function getPaymentStatus(
-        address sender
-    ) external view returns (bool, uint256) {
-        return (true, _whitelistTransferAmount[sender]);
+    function getPaymentStatus(address) external payable returns (bool, uint256) {
+        assembly {
+            mstore(0x00, true)
+            mstore(0x20, 4)
+            return(0x00, 0x40)
+        }
     }
 
-    function _checkAdmin() internal view returns (bool isAdmin_) {
-        return (__administrator0 == msg.sender ||
-            __administrator1 == msg.sender ||
-            __administrator2 == msg.sender ||
-            __administrator3 == msg.sender ||
-            __administrator4 == msg.sender);
-    }
-
-    function _checkOwner() internal view returns (bool) {
-        return __owner == msg.sender;
+    function _revert(bytes4 errorSelector) internal pure {
+        assembly {
+            mstore(0x00, errorSelector)
+            revert(0x00, 0x04)
+        }
     }
 }
 

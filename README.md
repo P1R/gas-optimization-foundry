@@ -34,7 +34,7 @@ Files prefixed with `original` are to represent the initial codebase provided as
 #### Optimized Storage Report:
 `sol2uml storage src/GasFlatten.sol -c GasContract -o img/gas-storage-report.svg`<br>
 
-![Optimized Storage Report](./img/optmized-gas-storage-report.svg)
+![Optimized Storage Report](./img/optimized-gas-storage-report.svg)
 
 #### Original Storage Report:
 `sol2uml storage src/original__GasFlatten.sol -c original__GasContract -o img/original-gas-storage-report.svg`<br>
