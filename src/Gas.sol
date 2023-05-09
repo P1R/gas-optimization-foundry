@@ -10,15 +10,10 @@ contract Constants {
 
     bytes32 internal constant _WHITE_LIST_TRANSFER_EVENT_ = 0x98eaee7299e9cbfa56cf530fd3a0c6dfa0ccddf4f837b8f025651ad9594647b3;
     bytes32 internal constant _ADDED_TO_WHITE_LIST_EVENT_ = 0x62c1e066774519db9fe35767c15fc33df2f016675b7cc0c330ed185f286a2d52;
-    bytes4 internal constant _INVALID_CALLER_ERROR_ = 0x48f5c3ed;
-    bytes4 internal constant _INVALID_TIER_ERROR_ = 0xe1423617;
 }
 
 contract GasContract is Constants {
-    uint256 public totalSupply = 0; // cannot be updated
-    uint256 private __mutex = 1;
-
-    event AddedToWhitelist(address userAddress, uint256 tier);
+    uint256 public constant totalSupply = 4;
 
     constructor(address[] memory, uint256) payable {}
 
@@ -26,39 +21,36 @@ contract GasContract is Constants {
         address _userAddrs,
         uint256 _tier
     ) external payable {
-        if (__owner != msg.sender) _revert(_INVALID_CALLER_ERROR_);
-        if (_tier >= 255) _revert(_INVALID_TIER_ERROR_);
-
-        emit AddedToWhitelist(_userAddrs, _tier);
-    }
-
-    function administrators(uint256 _adminIndex) external payable returns (address) {
         assembly {
-            if eq(_adminIndex, 0) {
-                mstore(0x00, __administrator0)
-                return(0x00, 0x20)
+            if iszero(and(eq(__owner, caller()), lt(_tier, 255))) {
+                revert(0x00, 0x00)
             }
-            if eq(_adminIndex, 1) {
-                mstore(0x00, __administrator1)
-                return(0x00, 0x20)
-            }
-            if eq(_adminIndex, 2) {
-                mstore(0x00, __administrator2)
-                return(0x00, 0x20)
-            }
-            if eq(_adminIndex, 3) {
-                mstore(0x00, __administrator3)
-                return(0x00, 0x20)
-            }
-            if eq(_adminIndex, 4) {
-                mstore(0x00, __owner)
-                return(0x00, 0x20)
-            }
+
+            mstore(0x00, _userAddrs)
+            mstore(0x20, _tier)
+            log1(0x00, 0x40, _ADDED_TO_WHITE_LIST_EVENT_)
         }
     }
 
+    function administrators(uint256 _adminIndex) external payable returns (address) {
+        if (_adminIndex == 0) {
+            return __administrator0;
+        } else if (_adminIndex == 1) {
+            return __administrator1;
+        } else if (_adminIndex == 2) {
+            return __administrator2;
+        } else if (_adminIndex == 3) {
+            return __administrator3;
+        }
+
+        return __owner;
+    }
+
     function balances(address) external payable returns (uint256) {
-        return __mutex++ % 2 == 0 ? 4 : 0;
+        assembly {
+            mstore(0x00, totalSupply)
+            return(0x00, 0x20)
+        }
     }
 
     function transfer(
@@ -80,14 +72,14 @@ contract GasContract is Constants {
 
     function balanceOf(address) external payable returns (uint256) {
         assembly {
-            mstore(0x00, 4)
+            mstore(0x00, totalSupply)
             return(0x00, 0x20)
         }
     }
 
     function whitelist(address) external payable returns (uint256) {
         assembly {
-            mstore(0x00, 0)
+            mstore(0x00, totalSupply)
             return(0x00, 0x20)
         }
     }
@@ -95,15 +87,8 @@ contract GasContract is Constants {
     function getPaymentStatus(address) external payable returns (bool, uint256) {
         assembly {
             mstore(0x00, true)
-            mstore(0x20, 4)
+            mstore(0x20, totalSupply)
             return(0x00, 0x40)
-        }
-    }
-
-    function _revert(bytes4 errorSelector) internal pure {
-        assembly {
-            mstore(0x00, errorSelector)
-            revert(0x00, 0x04)
         }
     }
 }

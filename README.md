@@ -26,7 +26,7 @@ EG: `forge test --match-test test_onlyOwner -vvvv`
 Files prefixed with `original` are to represent the initial codebase provided as the challenge.
 
 ## Gas Report Comparison
-`forge test --rpc-url http://127.0.0.1:8545 --gas-report -vv`<br>
+`forge test --rpc-url http://127.0.0.1:8545 --gas-report --optimize --optimizer-runs 1 --via-ir  -vv`<br>
 
 ![Gas Reports](./img/both-gas-reports.png)
 
